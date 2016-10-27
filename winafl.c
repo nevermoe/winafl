@@ -74,6 +74,7 @@ typedef struct _winafl_option_t {
     int fuzz_iterations;
     void **func_args;
     int num_fuz_args;
+    drwrap_wrap_flags_t call_convention;
 } winafl_option_t;
 static winafl_option_t options;
 
@@ -472,7 +473,7 @@ event_module_load(void *drcontext, const module_data_t *info, bool loaded)
                 to_wrap = (app_pc)dr_get_proc_address(info->handle, options.fuzz_method);
                 DR_ASSERT_MSG(to_wrap, "Can't find specified method in fuzz_module");
             }
-            drwrap_wrap(to_wrap, pre_fuzz_handler, post_fuzz_handler);
+            drwrap_wrap_ex(to_wrap, pre_fuzz_handler, post_fuzz_handler, NULL, options.call_convention);
         }
     
         if(options.debug_mode && (strcmp(module_name, "KERNEL32.dll") == 0)) {
@@ -593,6 +594,7 @@ options_init(client_id_t id, int argc, const char *argv[])
     options.fuzz_iterations = 1000;
     options.func_args = NULL;
     options.num_fuz_args = 0;
+    options.call_convention = DRWRAP_CALLCONV_DEFAULT;
     dr_snprintf(options.logdir, BUFFER_SIZE_ELEMENTS(options.logdir), ".");
 
     strcpy(options.pipe_name, "\\\\.\\pipe\\afl_pipe_default");
@@ -657,6 +659,42 @@ options_init(client_id_t id, int argc, const char *argv[])
             token = argv[++i];
             if (dr_sscanf(token, "%u", &verbose) != 1) {
                 USAGE_CHECK(false, "invalid -verbose number");
+            }
+        }
+        else if (strcmp(token, "-call_convention") == 0) {
+            USAGE_CHECK((i + 1) < argc, "missing call convention");
+            token = argv[++i];
+            if (strcmp(token, "aarch64") == 0) {
+                options.call_convention = DRWRAP_CALLCONV_AARCH64;
+            }
+            else if (strcmp(token, "amd64") == 0) {
+                options.call_convention = DRWRAP_CALLCONV_AMD64;
+            }
+            else if (strcmp(token, "arm") == 0) {
+                options.call_convention = DRWRAP_CALLCONV_ARM;
+            }
+            else if (strcmp(token, "cdecl") == 0) {
+                options.call_convention = DRWRAP_CALLCONV_CDECL;
+            }
+            else if (strcmp(token, "default") == 0) {
+                options.call_convention = DRWRAP_CALLCONV_DEFAULT;
+            }
+            else if (strcmp(token, "fastcall") == 0) {
+                options.call_convention = DRWRAP_CALLCONV_FASTCALL;
+            }
+            else if (strcmp(token, "microsoft_x64") == 0) {
+                options.call_convention = DRWRAP_CALLCONV_MICROSOFT_X64;
+            }
+            else if (strcmp(token, "stdcall") == 0) {
+                options.call_convention = DRWRAP_CALLCONV_STDCALL;
+            }else if (strcmp(token, "thiscall") == 0) {
+                options.call_convention = DRWRAP_CALLCONV_THISCALL;
+            }
+            else if (strcmp(token, "vararg") == 0) {
+                options.call_convention = DRWRAP_CALLCONV_VARARG;
+            }
+            else {
+                USAGE_CHECK(false, "UNSUPPORTED CALL CONVENTION");
             }
         }
         else {
