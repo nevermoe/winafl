@@ -1,0 +1,6 @@
+D:/code/winafl/build32/CMakeFiles/test.dir
+D:/code/winafl/build32/CMakeFiles/winafl.dir
+D:/code/winafl/build32/CMakeFiles/test_gdiplus.dir
+D:/code/winafl/build32/CMakeFiles/afl-fuzz.dir
+D:/code/winafl/build32/CMakeFiles/ALL_BUILD.dir
+D:/code/winafl/build32/CMakeFiles/ZERO_CHECK.dir
