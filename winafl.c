@@ -437,7 +437,7 @@ createfilew_interceptor(void *wrapcxt, INOUT void **user_data)
     wchar_t *filenamew = (wchar_t *)drwrap_get_arg(wrapcxt, 0);
 
     if(options.debug_mode)
-        dr_fprintf(winafl_data.log, "In OpenFileW, reading %ls\n", filenamew);
+        dr_fprintf(winafl_data.log, "In CreateFileW, reading %ls\n", filenamew);
 }
 
 static void
@@ -446,7 +446,7 @@ createfilea_interceptor(void *wrapcxt, INOUT void **user_data)
     char *filename = (char *)drwrap_get_arg(wrapcxt, 0);
 
     if(options.debug_mode)
-        dr_fprintf(winafl_data.log, "In OpenFileA, reading %s\n", filename);
+        dr_fprintf(winafl_data.log, "In CreateFileA, reading %s\n", filename);
 }
 
 
